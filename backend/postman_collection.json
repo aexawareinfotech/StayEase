@@ -1,0 +1,93 @@
+{
+	"info": {
+		"_postman_id": "c3f8dfa1-9c6f-4d9f-aef6-5b4e8e1aed3a",
+		"name": "StayEase API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\\"name\\\": \\\"Jane Doe\\\",\\n    \\\"email\\\": \\\"jane@test.com\\\",\\n    \\\"password\\\": \\\"Pass@1234\\\",\\n    \\\"phone\\\": \\\"1234567890\\\"\\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\\"email\\\": \\\"admin@stayease.com\\\",\\n    \\\"password\\\": \\\"Password@123\\\"\\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Rooms",
+			"item": [
+				{
+					"name": "Get All Rooms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rooms",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rooms"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000/api/v1"
+		}
+	]
+}

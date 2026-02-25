@@ -3,18 +3,40 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+const errorHandler = require('./middleware/error');
+
+// Route files
+const auth = require('./routes/authRoutes');
+const rooms = require('./routes/roomRoutes');
+const bookings = require('./routes/bookingRoutes');
+const admin = require('./routes/adminRoutes');
+
 const app = express();
 
-app.use(cors());
+// Body parser
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI)
-.then(()=> console.log("MongoDB Connected"))
-.catch(err => console.log(err));
+// Enable CORS
+app.use(cors());
 
-app.get("/",(req,res)=>{
+// Mount routers
+app.use('/api/v1/auth', auth);
+app.use('/api/v1/rooms', rooms);
+app.use('/api/v1/bookings', bookings);
+app.use('/api/v1/admin', admin);
+
+app.get("/", (req, res) => {
     res.send("StayEase API Running....");
 });
 
-const PORT = 5000;
-app.listen(PORT,()=> console.log(`Server running on port ${PORT}`));
+// Error handling middleware
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/stayease')
+    .then(() => {
+        console.log("MongoDB Connected");
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    })
+    .catch(err => console.log(err));

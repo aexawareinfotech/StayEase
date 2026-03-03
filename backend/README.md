@@ -19,7 +19,7 @@
    ```
    **Admin credentials:**
    - Email: admin@stayease.com
-   - Password: Password@123
+   - Password: admin123
 
    **Guest credentials:**
    - Email: user@stayease.com

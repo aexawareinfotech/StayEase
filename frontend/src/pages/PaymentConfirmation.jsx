@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaEnvelope, FaPrint } from 'react-icons/fa';
 
 const PaymentConfirmation = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [showEmailModal, setShowEmailModal] = useState(true);
 
     const state = location.state;
 
@@ -60,11 +61,48 @@ const PaymentConfirmation = () => {
                                 >
                                     Go to My Bookings
                                 </button>
+
+                                <button
+                                    className="btn btn-outline-secondary w-100 py-3 fw-bold rounded-pill shadow-sm hover-scale transition mt-3 d-flex align-items-center justify-content-center gap-2"
+                                    onClick={() => setShowEmailModal(true)}
+                                >
+                                    <FaEnvelope /> View Email Receipt
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Simulated Email Modal */}
+            {showEmailModal && (
+                <div className="modal zoom-in" tabIndex="-1" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content border-0 rounded-4 shadow-lg p-3">
+                            <div className="modal-header border-0 pb-0">
+                                <h5 className="modal-title fw-bold text-dark d-flex align-items-center gap-2">
+                                    <FaEnvelope className="text-primary" /> Email Sent (Simulated)
+                                </h5>
+                                <button type="button" className="btn-close" onClick={() => setShowEmailModal(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="bg-light p-4 rounded-3 text-start">
+                                    <p className="mb-2"><strong>To:</strong> User</p>
+                                    <p className="mb-3"><strong>Subject:</strong> Booking Confirmation – StayEase</p>
+                                    <hr />
+                                    <p className="mb-2"><strong>Booking ID:</strong> {bookingId}</p>
+                                    <p className="mb-2"><strong>Transaction ID:</strong> {transactionId}</p>
+                                    <p className="mb-0"><strong>Total Paid:</strong> ₹ {amountPaid.toLocaleString("en-IN")}</p>
+                                </div>
+                            </div>
+                            <div className="modal-footer border-0 pt-0 justify-content-between">
+                                <button type="button" className="btn btn-secondary rounded-pill px-4" onClick={() => setShowEmailModal(false)}>Close</button>
+                                <button type="button" className="btn btn-primary rounded-pill px-4 d-flex align-items-center gap-2" onClick={() => window.print()}><FaPrint /> Print Email</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

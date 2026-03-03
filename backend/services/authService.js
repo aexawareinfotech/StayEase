@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const EmailNotification = require('../models/EmailNotification');
 const ErrorResponse = require('../utils/errorResponse');
 const jwt = require('jsonwebtoken');
 
@@ -25,6 +26,15 @@ exports.registerUser = async (userData) => {
     });
 
     const token = generateToken(user._id);
+
+    // Simulated Welcome Email
+    await EmailNotification.create({
+        userId: user._id,
+        email: user.email,
+        subject: "Welcome to StayEase!",
+        message: `Hello ${user.name}, welcome to StayEase. Your account has been created successfully.`,
+        type: "WELCOME"
+    });
 
     return { user, token };
 };

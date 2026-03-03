@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Room = require('../models/Room');
+const Notification = require('../models/Notification');
 const ErrorResponse = require('../utils/errorResponse');
 const crypto = require('crypto');
 
@@ -53,6 +54,11 @@ exports.createBooking = async (data) => {
         totalPrice
     });
 
+    await Notification.create({
+        message: `New booking created for room ${roomDetails.roomNumber}`,
+        type: 'booking'
+    });
+
     return booking;
 };
 
@@ -77,6 +83,12 @@ exports.cancelBooking = async (bookingId, userId) => {
 
     booking.status = 'cancelled';
     await booking.save();
+
+    await Notification.create({
+        message: `Booking ${booking._id} has been cancelled`,
+        type: 'cancellation'
+    });
+
     return booking;
 };
 

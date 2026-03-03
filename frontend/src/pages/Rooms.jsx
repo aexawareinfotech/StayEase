@@ -103,7 +103,12 @@ const Rooms = () => {
                                 <div key={room._id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
                                     <div className="h-48 bg-gray-200 relative">
                                         {/* Placeholder Image */}
-                                        <img src={`https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80`} alt={room.type} className="w-full h-full object-cover" />
+                                        <img src={room.images && room.images.length > 0 ? room.images[0] : ({
+                                            Single: "https://images.unsplash.com/photo-1505693314120-0d443867891c",
+                                            Double: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b",
+                                            Deluxe: "https://images.unsplash.com/photo-1590490360182-c33d57733427",
+                                            Suite: "https://images.unsplash.com/photo-1578898886225-c7c8940473f0"
+                                        }[room.type] || "https://images.unsplash.com/photo-1590490360182-c33d57733427")} alt={`${room.type} Room`} className="w-full h-full object-cover" />
                                         <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-bold shadow text-blue-600">
                                             ₹ {room.price.toLocaleString("en-IN")} / night
                                         </div>

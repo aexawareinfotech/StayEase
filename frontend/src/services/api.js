@@ -36,19 +36,25 @@ export const bookingService = {
     createBooking: (data) => apis.post('/bookings', data),
     getMyBookings: () => apis.get('/bookings/my'),
     cancelBooking: (id) => apis.put(`/bookings/${id}/cancel`),
-    payBooking: (id, paymentMethod) => apis.put(`/bookings/${id}/pay`, { paymentMethod }),
+    payBooking: (id, paymentMethod, transactionId) => apis.put(`/bookings/${id}/pay`, { paymentMethod, transactionId }),
 };
 
 export const adminService = {
     getDashboardStats: () => apis.get('/admin/dashboard'),
     getAllBookings: () => apis.get('/admin/bookings'),
     updateBookingStatus: (id, status) => apis.put(`/admin/bookings/${id}/status`, { status }),
-    getAllRooms: () => apis.get('/rooms'),
+    getAllRooms: () => apis.get('/admin/rooms'),
     createRoom: (data) => apis.post('/rooms', data),
     updateRoom: (id, data) => apis.put(`/rooms/${id}`, data),
     deleteRoom: (id) => apis.delete(`/rooms/${id}`),
     getOccupancyReport: (params) => apis.get('/admin/reports/occupancy', { params }),
     getRevenueReport: (params) => apis.get('/admin/reports/revenue', { params }),
+    getNotifications: () => apis.get('/admin/notifications'),
+    markNotificationRead: (id) => apis.put(`/admin/notifications/${id}/read`),
+};
+
+export const emailService = {
+    getMyEmails: () => apis.get('/emails/my'),
 };
 
 export default apis;

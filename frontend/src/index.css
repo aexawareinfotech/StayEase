@@ -64,3 +64,67 @@ code {
     box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
   }
 }
+
+.admin-content {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Dropdown CSS */
+.dropdown {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: none;
+  padding: 10px;
+  border-radius: 6px;
+  min-width: 150px;
+  z-index: 1000;
+  list-style: none;
+  /* Ensure no bullets */
+  margin: 0;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu li {
+  padding: 5px 10px;
+}
+
+.dropdown-menu li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+/* Service Rating */
+.service-rating {
+  color: #facc15;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.rating {
+  color: #facc15;
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+/* Image Zoom */
+.zoom-image {
+  transition: transform 0.4s ease-in-out;
+}
+
+.zoom-image:hover {
+  transform: scale(1.3);
+}

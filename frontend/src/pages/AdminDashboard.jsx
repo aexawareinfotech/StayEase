@@ -47,40 +47,51 @@ const AdminDashboard = () => {
     if (loading) return <div className="min-h-screen flex justify-center items-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
 
     return (
-        <div className="bg-gray-50 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto space-y-8">
-                <div className="flex justify-between items-center border-b pb-4">
-                    <h1 className="text-3xl font-extrabold text-gray-900">Admin Dashboard</h1>
-                    <a href="/rooms" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl shadow-md transition duration-200 text-decoration-none">
-                        Manage Rooms
+        <div className="container-fluid py-4 fade-in">
+            <div className="d-flex justify-content-between align-items-center border-bottom pb-4 mb-4">
+                <h1 className="fw-bolder text-dark mb-0 fs-2 tracking-wider">Dashboard <span className="text-primary">Overview</span></h1>
+                <div className="d-flex gap-3">
+                    <a href="/admin/payment-history" className="btn btn-outline-success fw-bold px-4 rounded-pill shadow-sm transition hover-scale">
+                        <i className="bi bi-wallet2 me-2"></i> Payment History
+                    </a>
+                    <a href="/admin/rooms" className="btn btn-primary fw-bold px-4 rounded-pill shadow text-white transition hover-scale" style={{ background: 'linear-gradient(to right, #2563eb, #1d4ed8)', border: 'none' }}>
+                        <i className="bi bi-door-open me-2"></i> Manage Rooms
                     </a>
                 </div>
+            </div>
 
-                {/* Dashboard Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
-                        <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">Total Revenue</p>
-                        <p className="text-4xl font-extrabold text-blue-600">₹ {stats.totalRevenue.toLocaleString("en-IN")}</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
-                        <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">Active Bookings</p>
-                        <p className="text-4xl font-extrabold text-emerald-600">{stats.activeBookings}</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
-                        <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">Today's Check-ins</p>
-                        <p className="text-4xl font-extrabold text-indigo-600">{stats.todaysCheckIns}</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
-                        <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">Today's Check-outs</p>
-                        <p className="text-4xl font-extrabold text-red-600">{stats.todaysCheckOuts}</p>
-                    </div>
-                </div>
+            {/* Dashboard Stats */}
+            <div className="row g-4 mb-5">
+                {[
+                    { title: "Today's Check-ins", value: stats.todaysCheckIns, icon: "text-primary bg-primary bg-opacity-10", size: "col-md-3" },
+                    { title: "Today's Check-outs", value: stats.todaysCheckOuts, icon: "text-danger bg-danger bg-opacity-10", size: "col-md-3" },
+                    { title: "Active Bookings", value: stats.activeBookings, icon: "text-success bg-success bg-opacity-10", size: "col-md-3" },
+                    { title: "Occupancy Rate", value: stats.occupancyRate, icon: "text-warning bg-warning bg-opacity-10", size: "col-md-3" },
 
-                {/* Revenue Chart */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-96">
-                    <h2 className="text-xl font-bold text-gray-800 mb-6">Revenue Overview (Last 30 Days)</h2>
+                    { title: "Available Rooms", value: stats.availableRooms, icon: "text-info bg-info bg-opacity-10", size: "col-md-4" },
+                    { title: "Weekly Revenue", value: `₹ ${stats.weeklyRevenue.toLocaleString("en-IN")}`, icon: "text-secondary bg-secondary bg-opacity-10", size: "col-md-4" },
+                    { title: "Monthly Revenue", value: `₹ ${stats.monthlyRevenue.toLocaleString("en-IN")}`, icon: "text-dark bg-dark bg-opacity-10", size: "col-md-4" }
+                ].map((stat, i) => (
+                    <div className={stat.size} key={i}>
+                        <div className="card border-0 shadow-sm rounded-4 h-100 hover-scale transition">
+                            <div className="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                <span className={`p-3 rounded-circle mb-3 ${stat.icon}`}>
+                                    <i className="bi bi-bar-chart-fill fs-4"></i>
+                                </span>
+                                <h6 className="text-muted fw-bold text-uppercase tracking-wider small mb-2">{stat.title}</h6>
+                                <h2 className="fw-bolder text-dark mb-0">{stat.value}</h2>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Revenue Chart */}
+            <div className="card border-0 shadow-sm rounded-4 mb-5 p-4">
+                <h4 className="fw-bold text-dark border-bottom pb-3 mb-4">Revenue Overview <span className="text-muted fs-6 fw-normal">(Last 30 Days)</span></h4>
+                <div style={{ width: '100%', height: 350 }}>
                     {revenueData && revenueData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="85%">
+                        <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={revenueData}>
                                 <defs>
                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -88,85 +99,94 @@ const AdminDashboard = () => {
                                         <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis dataKey="_id" stroke="#94a3b8" fontSize={12} tickMargin={10} />
-                                <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(value) => `₹${value.toLocaleString("en-IN")}`} />
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                <XAxis dataKey="_id" stroke="#6c757d" fontSize={12} tickMargin={10} />
+                                <YAxis stroke="#6c757d" fontSize={12} tickFormatter={(value) => `₹${value.toLocaleString("en-IN")}`} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#dee2e6" />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 .5rem 1rem rgba(0,0,0,.15)' }}
                                     formatter={(value) => [`₹${value.toLocaleString("en-IN")}`, 'Revenue']}
-                                    labelStyle={{ color: '#475569', fontWeight: 'bold' }}
+                                    labelStyle={{ color: '#212529', fontWeight: 'bold' }}
                                 />
                                 <Area type="monotone" dataKey="dailyRevenue" stroke="#2563eb" fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={3} />
                             </AreaChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div className="flex h-full items-center justify-center text-gray-400 font-medium">No revenue data for the selected period.</div>
+                        <div className="h-100 d-flex align-items-center justify-content-center text-muted fw-bold">No revenue data for the selected period.</div>
                     )}
                 </div>
+            </div>
 
-                {/* Bookings Management */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-gray-800">Recent Bookings</h2>
-                        <span className="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">{bookings.length} Total</span>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID / User</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Room</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Dates</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Price</th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Action</th>
+            {/* Bookings Management */}
+            <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div className="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                    <h4 className="fw-bold text-dark mb-0">Recent Bookings</h4>
+                    <span className="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill fs-6">{bookings.length} Total</span>
+                </div>
+                <div className="table-responsive">
+                    <table className="table table-hover align-middle mb-0">
+                        <thead className="table-light">
+                            <tr>
+                                <th className="text-secondary fw-bold small text-uppercase tracking-wider py-3 px-4">ID / User</th>
+                                <th className="text-secondary fw-bold small text-uppercase tracking-wider py-3">Room</th>
+                                <th className="text-secondary fw-bold small text-uppercase tracking-wider py-3">Dates</th>
+                                <th className="text-secondary fw-bold small text-uppercase tracking-wider py-3">Price</th>
+                                <th className="text-secondary fw-bold small text-uppercase tracking-wider py-3">Status</th>
+                                <th className="text-secondary fw-bold small text-uppercase tracking-wider py-3 text-end px-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bookings.map((booking) => (
+                                <tr key={booking._id} className="transition border-bottom">
+                                    <td className="py-3 px-4">
+                                        <div className="fw-bolder text-dark">{booking.user?.name || 'Unknown'}</div>
+                                        <div className="text-muted small font-monospace">{booking.transactionId || booking._id}</div>
+                                    </td>
+                                    <td>
+                                        <div className="fw-bold text-primary">{booking.room?.type} Room</div>
+                                        <div className="text-muted small fw-semibold">No. {booking.room?.roomNumber}</div>
+                                    </td>
+                                    <td>
+                                        <div className="fw-semibold text-dark small">{new Date(booking.checkIn).toLocaleDateString()}</div>
+                                        <div className="text-muted small px-1">to a {new Date(booking.checkOut).toLocaleDateString()}</div>
+                                    </td>
+                                    <td className="fw-bold text-success">
+                                        ₹ {booking.totalPrice.toLocaleString("en-IN")}
+                                    </td>
+                                    <td>
+                                        <span className={`badge border shadow-sm px-3 py-2 rounded-pill ${booking.status === 'confirmed' ? 'bg-primary bg-opacity-10 text-primary border-primary' :
+                                            booking.status === 'checked-in' ? 'bg-success bg-opacity-10 text-success border-success' :
+                                                booking.status === 'checked-out' ? 'bg-secondary bg-opacity-10 text-secondary border-secondary' :
+                                                    'bg-danger bg-opacity-10 text-danger border-danger'
+                                            }`}>
+                                            {booking.status.toUpperCase()}
+                                        </span>
+                                    </td>
+                                    <td className="text-end px-4">
+                                        <select
+                                            className="form-select form-select-sm d-inline-block w-auto shadow-sm fw-bold border-secondary bg-light cursor-pointer"
+                                            value={booking.status}
+                                            onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
+                                        >
+                                            <option value="confirmed">Confirmed</option>
+                                            <option value="checked-in">Checked In</option>
+                                            <option value="checked-out">Checked Out</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {bookings.map((booking) => (
-                                    <tr key={booking._id} className="hover:bg-gray-50 transition">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-bold text-gray-900">{booking.user?.name || 'Unknown'}</div>
-                                            <div className="text-xs text-gray-500">{booking.transactionId}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-semibold text-gray-800">{booking.room?.type} Rm</div>
-                                            <div className="text-xs text-gray-500">No. {booking.room?.roomNumber}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
-                                            {new Date(booking.checkIn).toLocaleDateString()} <span className="text-gray-400">to</span><br /> {new Date(booking.checkOut).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">
-                                            ₹ {booking.totalPrice.toLocaleString("en-IN")}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full border shadow-sm ${booking.status === 'confirmed' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                                booking.status === 'checked-in' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                                    booking.status === 'checked-out' ? 'bg-gray-50 text-gray-700 border-gray-200' :
-                                                        'bg-red-50 text-red-700 border-red-200'
-                                                }`}>
-                                                {booking.status.toUpperCase()}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <select
-                                                className="bg-white border border-gray-300 text-gray-700 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2 shadow-sm font-semibold cursor-pointer outline-none"
-                                                value={booking.status}
-                                                onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
-                                            >
-                                                <option value="confirmed">Confirmed</option>
-                                                <option value="checked-in">Checked In</option>
-                                                <option value="checked-out">Checked Out</option>
-                                                <option value="cancelled">Cancelled</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+            <style>{`
+                .hover-scale { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+                .hover-scale:hover { transform: scale(1.03); }
+                .tracking-wider { letter-spacing: 0.05em; }
+                .fade-in { animation: fadeIn 0.4s ease-in; }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            `}</style>
         </div>
     );
 };

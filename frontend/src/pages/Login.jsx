@@ -1,10 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
-    const { login } = useContext(AuthContext);
+    const { login, logout, user, role } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+            if (role === 'admin') navigate('/admin/dashboard', { replace: true });
+            else navigate('/', { replace: true });
+        }
+    }, [user, role, navigate]);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -18,8 +25,12 @@ const Login = () => {
         try {
             const res = await login({ email, password });
             if (res.success) {
-                if (res.data.role === 'admin') navigate('/admin/dashboard');
-                else navigate('/');
+                if (res.data.role !== 'guest') {
+                    logout();
+                    setError('Access Denied. Admins must login at /admin/login');
+                } else {
+                    navigate('/');
+                }
             }
         } catch (err) {
             setError(err.response?.data?.error || 'Invalid credentials');

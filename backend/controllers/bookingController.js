@@ -1,3 +1,5 @@
+const Booking = require('../models/Booking');
+const EmailNotification = require('../models/EmailNotification');
 const bookingService = require('../services/bookingService');
 const ErrorResponse = require('../utils/errorResponse');
 
@@ -13,9 +15,28 @@ exports.createBooking = async (req, res, next) => {
 
 exports.payBooking = async (req, res, next) => {
     try {
-        const { paymentMethod } = req.body;
-        const booking = await bookingService.payBooking(req.params.id, req.user._id, paymentMethod);
-        res.status(200).json({ success: true, data: booking });
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        booking.paymentStatus = "PAID";
+        booking.paymentMethod = req.body.paymentMethod;
+        booking.transactionId = req.body.transactionId;
+
+        await booking.save();
+
+        // Simulated Booking Email
+        await EmailNotification.create({
+            userId: req.user._id,
+            email: req.user.email,
+            subject: "Booking Confirmation – StayEase",
+            message: `Booking ID: ${booking._id}\nCheck-in: ${new Date(booking.checkIn).toLocaleDateString()}\nCheck-out: ${new Date(booking.checkOut).toLocaleDateString()}\nTotal: ₹ ${booking.totalPrice.toLocaleString('en-IN')}`,
+            type: "BOOKING_CONFIRMATION"
+        });
+
+        res.status(200).json({ success: true, booking });
     } catch (error) {
         next(error);
     }

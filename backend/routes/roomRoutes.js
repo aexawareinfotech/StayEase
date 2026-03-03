@@ -1,6 +1,6 @@
 const express = require('express');
 const { getRooms, getRoom, createRoom, updateRoom, deleteRoom, searchRooms } = require('../controllers/roomController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize } = require('../middlewares/auth');
 
 const router = express.Router();
 

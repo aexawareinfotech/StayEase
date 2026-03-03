@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Room = require('../models/Room');
+const Notification = require('../models/Notification');
 const ErrorResponse = require('../utils/errorResponse');
 
 exports.getDashboardStats = async () => {
@@ -9,7 +10,7 @@ exports.getDashboardStats = async () => {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const revenueObj = await Booking.aggregate([
-        { $match: { status: { $ne: 'cancelled' } } },
+        { $match: { paymentStatus: 'PAID' } },
         { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }
     ]);
     const totalRevenue = revenueObj.length > 0 ? revenueObj[0].totalRevenue : 0;
@@ -26,12 +27,41 @@ exports.getDashboardStats = async () => {
         status: { $in: ['checked-in'] }
     });
 
+    const totalRooms = await Room.countDocuments();
+    const availableRooms = await Room.countDocuments({ status: 'available' });
+    const occupancyRateNumber = totalRooms === 0 ? 0 : ((totalRooms - availableRooms) / totalRooms) * 100;
+    const occupancyRate = Math.round(occupancyRateNumber * 100) / 100 + '%';
+
+    const oneWeekAgo = new Date(today);
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const weeklyRevObj = await Booking.aggregate([
+        { $match: { paymentStatus: 'PAID', createdAt: { $gte: oneWeekAgo } } },
+        { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+    ]);
+    const weeklyRevenue = weeklyRevObj.length > 0 ? weeklyRevObj[0].total : 0;
+
+    const oneMonthAgo = new Date(today);
+    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+    const monthlyRevObj = await Booking.aggregate([
+        { $match: { paymentStatus: 'PAID', createdAt: { $gte: oneMonthAgo } } },
+        { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+    ]);
+    const monthlyRevenue = monthlyRevObj.length > 0 ? monthlyRevObj[0].total : 0;
+
     return {
         totalRevenue,
         activeBookings,
         todaysCheckIns,
-        todaysCheckOuts
+        todaysCheckOuts,
+        availableRooms,
+        occupancyRate,
+        weeklyRevenue,
+        monthlyRevenue
     };
+};
+
+exports.getAllRooms = async () => {
+    return await Room.find();
 };
 
 exports.getAllBookings = async (query) => {
@@ -103,7 +133,7 @@ exports.getRevenueReport = async (query) => {
     const revenueObj = await Booking.aggregate([
         {
             $match: {
-                status: { $ne: 'cancelled' },
+                paymentStatus: 'PAID',
                 createdAt: { $gte: start, $lte: end }
             }
         },
@@ -127,4 +157,12 @@ exports.getRevenueReport = async (query) => {
         totalBookings,
         dailyBreakdown: revenueObj
     };
+};
+
+exports.getNotifications = async () => {
+    return await Notification.find().sort({ createdAt: -1 }).limit(20);
+};
+
+exports.markNotificationRead = async (id) => {
+    return await Notification.findByIdAndUpdate(id, { isRead: true }, { new: true });
 };

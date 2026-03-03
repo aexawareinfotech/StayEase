@@ -10,6 +10,15 @@ exports.getDashboardStats = async (req, res, next) => {
     }
 };
 
+exports.getAllRoomsAdmin = async (req, res, next) => {
+    try {
+        const rooms = await adminService.getAllRooms();
+        res.status(200).json({ success: true, count: rooms.length, data: rooms });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getAllBookings = async (req, res, next) => {
     try {
         const bookings = await adminService.getAllBookings(req.query);
@@ -44,6 +53,24 @@ exports.getRevenueReport = async (req, res, next) => {
     try {
         const report = await adminService.getRevenueReport(req.query);
         res.status(200).json({ success: true, data: report });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getNotifications = async (req, res, next) => {
+    try {
+        const notifications = await adminService.getNotifications();
+        res.status(200).json({ success: true, count: notifications.length, data: notifications });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.markNotificationRead = async (req, res, next) => {
+    try {
+        const notification = await adminService.markNotificationRead(req.params.id);
+        res.status(200).json({ success: true, data: notification });
     } catch (error) {
         next(error);
     }

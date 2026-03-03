@@ -17,11 +17,38 @@ exports.getRoomById = async (id) => {
     return await Room.findById(id);
 };
 
+const ObjectRoomImages = {
+    Single: [
+        "https://images.unsplash.com/photo-1505693314120-0d443867891c",
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2"
+    ],
+    Double: [
+        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b",
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32"
+    ],
+    Deluxe: [
+        "https://images.unsplash.com/photo-1590490360182-c33d57733427",
+        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa"
+    ],
+    Suite: [
+        "https://images.unsplash.com/photo-1578898886225-c7c8940473f0",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+    ]
+};
+
 exports.createRoom = async (data) => {
+    const images = ObjectRoomImages[data.type] || [];
+    if (!data.images || data.images.length === 0) {
+        data.images = images;
+    }
     return await Room.create(data);
 };
 
 exports.updateRoom = async (id, data) => {
+    const images = ObjectRoomImages[data.type] || [];
+    if (!data.images || data.images.length === 0) {
+        data.images = images;
+    }
     return await Room.findByIdAndUpdate(id, data, {
         new: true,
         runValidators: true

@@ -3,6 +3,7 @@ const ErrorResponse = require('../utils/errorResponse');
 
 exports.getRooms = async (req, res, next) => {
     try {
+        req.query.status = 'available';
         const rooms = await roomService.getRooms(req.query);
         res.status(200).json({ success: true, count: rooms.length, data: rooms });
     } catch (error) {

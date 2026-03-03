@@ -1,8 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
 
 const Footer = () => {
+    const location = useLocation();
+
+    if (location.pathname.startsWith('/admin')) {
+        return null; // Do not show footer on admin routes
+    }
+
     return (
         <footer className="bg-dark text-light pt-5 pb-3 font-sans">
             <div className="container">

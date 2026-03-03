@@ -1,35 +1,72 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { authService } from '../services/api';
+import { jwtDecode } from 'jwt-decode';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token') || null);
+    const [role, setRole] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('token') || sessionStorage.getItem('token') || null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Initialize user state if token exists. Since our backend sends user data upon login,
-        // we'll simply parse token or keep user info from localStorage if available.
-        const storedUser = localStorage.getItem('user');
-        if (storedUser && token) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (e) {
-                console.error("Failed parsing stored user");
+        const checkAuthStatus = () => {
+            const storedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (storedToken) {
+                try {
+                    const decoded = jwtDecode(storedToken);
+                    if (decoded.exp * 1000 < Date.now()) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        sessionStorage.removeItem('token');
+                        sessionStorage.removeItem('user');
+                        setUser(null);
+                        setRole(null);
+                        setToken(null);
+                    } else {
+                        setToken(storedToken);
+                        const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+                        if (storedUser) {
+                            setUser(JSON.parse(storedUser));
+                        } else {
+                            setUser(decoded);
+                        }
+                        setRole(decoded.role || JSON.parse(storedUser || '{}').role);
+                    }
+                } catch (e) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    sessionStorage.removeItem('token');
+                    sessionStorage.removeItem('user');
+                    setUser(null);
+                    setRole(null);
+                    setToken(null);
+                }
+            } else {
+                setUser(null);
+                setRole(null);
+                setToken(null);
             }
-        }
-        setLoading(false);
-    }, [token]);
+            setLoading(false);
+        };
+        checkAuthStatus();
+    }, []);
 
-    const login = async (credentials) => {
+    const login = async (credentials, rememberMe = true) => {
         const response = await authService.login(credentials);
         if (response.data.success) {
             const { token, data } = response.data;
             setToken(token);
             setUser(data);
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(data));
+            setRole(data.role);
+            if (rememberMe) {
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(data));
+            } else {
+                sessionStorage.setItem('token', token);
+                sessionStorage.setItem('user', JSON.stringify(data));
+            }
         }
         return response.data;
     };
@@ -41,13 +78,16 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setUser(null);
+        setRole(null);
         setToken(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, register, loading }}>
+        <AuthContext.Provider value={{ user, role, token, login, logout, register, loading }}>
             {children}
         </AuthContext.Provider>
     );

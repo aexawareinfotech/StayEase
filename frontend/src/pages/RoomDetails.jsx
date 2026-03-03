@@ -36,7 +36,7 @@ const RoomDetails = () => {
 
     const handleBooking = () => {
         if (!token) {
-            navigate('/login');
+            navigate('/auth');
             return;
         }
         if (!checkin || !checkout) {
@@ -67,20 +67,72 @@ const RoomDetails = () => {
         navigate('/booking');
     };
 
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    useEffect(() => {
+        if (room && !selectedImage) {
+            const categoryImages = {
+                Single: "https://images.unsplash.com/photo-1505693314120-0d443867891c",
+                Double: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b",
+                Deluxe: "https://images.unsplash.com/photo-1590490360182-c33d57733427",
+                Suite: "https://images.unsplash.com/photo-1578898886225-c7c8940473f0"
+            };
+            setSelectedImage(
+                room.images && room.images.length > 0
+                    ? room.images[0]
+                    : (categoryImages[room.type] || categoryImages['Single'])
+            );
+        }
+    }, [room, selectedImage]);
+
     if (loading) return <div className="min-h-screen flex justify-center items-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
     if (error) return <div className="text-center py-20 text-red-600">{error}</div>;
     if (!room) return <div className="text-center py-20">Room not found</div>;
+
+    const categoryImages = {
+        Single: [
+            "https://images.unsplash.com/photo-1505693314120-0d443867891c",
+            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2"
+        ],
+        Double: [
+            "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b",
+            "https://images.unsplash.com/photo-1611892440504-42a792e24d32"
+        ],
+        Deluxe: [
+            "https://images.unsplash.com/photo-1590490360182-c33d57733427",
+            "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa"
+        ],
+        Suite: [
+            "https://images.unsplash.com/photo-1578898886225-c7c8940473f0",
+            "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+        ]
+    };
+
+    const displayImages = room.images && room.images.length > 0 ? room.images : (categoryImages[room.type] || categoryImages['Single']);
 
     return (
         <div className="bg-gray-50 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
                 <div className="md:flex">
-                    <div className="md:w-1/2">
-                        <img
-                            src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt={room.type}
-                            className="w-full h-96 md:h-full object-cover"
-                        />
+                    <div className="md:w-1/2 p-6 flex flex-col justify-center bg-gray-100 rounded-l-3xl relative">
+                        <div className="overflow-hidden rounded-2xl shadow-lg bg-white relative h-96 w-full flex items-center justify-center">
+                            <img
+                                src={selectedImage}
+                                alt={room.type}
+                                className="w-full h-full object-cover zoom-image"
+                            />
+                        </div>
+                        <div className="flex justify-center gap-4 mt-6">
+                            {displayImages.map((img, i) => (
+                                <img
+                                    key={i}
+                                    src={img}
+                                    onClick={() => setSelectedImage(img)}
+                                    className={`w-20 h-20 rounded-xl object-cover cursor-pointer hover:opacity-80 transition hover:shadow-md ${selectedImage === img ? 'ring-4 ring-blue-500 shadow-lg' : 'opacity-70'}`}
+                                    alt={`${room.type} view ${i + 1}`}
+                                />
+                            ))}
+                        </div>
                     </div>
                     <div className="md:w-1/2 p-8 md:p-12">
                         <div className="flex justify-between items-center mb-4">

@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-const errorHandler = require('./middleware/error');
+const errorHandler = require('./middlewares/error');
 
 // Route files
 const auth = require('./routes/authRoutes');
 const rooms = require('./routes/roomRoutes');
 const bookings = require('./routes/bookingRoutes');
 const admin = require('./routes/adminRoutes');
+const emails = require('./routes/emailRoutes');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/v1/auth', auth);
 app.use('/api/v1/rooms', rooms);
 app.use('/api/v1/bookings', bookings);
 app.use('/api/v1/admin', admin);
+app.use('/api/v1/emails', emails);
 
 app.get("/", (req, res) => {
     res.send("StayEase API Running....");

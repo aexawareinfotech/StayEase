@@ -4,6 +4,30 @@ import { BookingContext } from '../context/BookingContext';
 import CountUp from 'react-countup';
 import { FaBed, FaHeadset, FaShieldAlt, FaUndo, FaCheckCircle, FaStar } from 'react-icons/fa';
 
+const testimonials = [
+    {
+        name: "Rahul Sharma",
+        location: "Mumbai",
+        rating: 5,
+        image: "https://randomuser.me/api/portraits/men/32.jpg",
+        review: "Amazing hospitality and clean rooms."
+    },
+    {
+        name: "Priya Patel",
+        location: "Ahmedabad",
+        rating: 4,
+        image: "https://randomuser.me/api/portraits/women/44.jpg",
+        review: "Smooth booking and great service."
+    },
+    {
+        name: "Arjun Mehta",
+        location: "Delhi",
+        rating: 4,
+        image: "https://randomuser.me/api/portraits/men/76.jpg",
+        review: "Comfortable stay and good pricing."
+    }
+];
+
 const Home = () => {
     const navigate = useNavigate();
     const { updateSearchParams } = useContext(BookingContext);
@@ -127,6 +151,11 @@ const Home = () => {
                                         <FaBed size={32} />
                                     </div>
                                     <h4 className="card-title fw-bold">Luxury Rooms</h4>
+                                    <div className="service-rating">
+                                        {[...Array(4)].map((_, i) => (
+                                            <span key={i}>⭐</span>
+                                        ))}
+                                    </div>
                                     <p className="card-text text-secondary mt-3">Experience ultimate comfort with our premium, well-equipped luxury rooms suited for everyone.</p>
                                 </div>
                             </div>
@@ -139,6 +168,11 @@ const Home = () => {
                                         <FaHeadset size={32} />
                                     </div>
                                     <h4 className="card-title fw-bold">24/7 Support</h4>
+                                    <div className="service-rating">
+                                        {[...Array(4)].map((_, i) => (
+                                            <span key={i}>⭐</span>
+                                        ))}
+                                    </div>
                                     <p className="card-text text-secondary mt-3">Our dedicated customer service team is always available around the clock to assist you.</p>
                                 </div>
                             </div>
@@ -151,6 +185,11 @@ const Home = () => {
                                         <FaShieldAlt size={32} />
                                     </div>
                                     <h4 className="card-title fw-bold">Secure Booking</h4>
+                                    <div className="service-rating">
+                                        {[...Array(4)].map((_, i) => (
+                                            <span key={i}>⭐</span>
+                                        ))}
+                                    </div>
                                     <p className="card-text text-secondary mt-3">Your standard security is our priority. Enjoy safe transactions through our simulated portals.</p>
                                 </div>
                             </div>
@@ -163,6 +202,11 @@ const Home = () => {
                                         <FaUndo size={32} />
                                     </div>
                                     <h4 className="card-title fw-bold">Flexible Refund</h4>
+                                    <div className="service-rating">
+                                        {[...Array(4)].map((_, i) => (
+                                            <span key={i}>⭐</span>
+                                        ))}
+                                    </div>
                                     <p className="card-text text-secondary mt-3">Things change, and so can your plans. Cancel early easily per our flexible refund policy.</p>
                                 </div>
                             </div>
@@ -189,7 +233,7 @@ const Home = () => {
                         <div className="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
                             <FaCheckCircle size={40} className="mb-3 opacity-75" />
                             <h2 className="display-4 fw-bold mb-1">
-                                <CountUp end={5} suffix=" Star" duration={2} enableScrollSpy scrollSpyOnce />
+                                <CountUp end={4} suffix=" Star" duration={2} enableScrollSpy scrollSpyOnce />
                             </h2>
                             <p className="fw-semibold tracking-wider text-uppercase small">Premium Hospitality</p>
                         </div>
@@ -220,50 +264,25 @@ const Home = () => {
                     </div>
 
                     <div className="row g-4">
-                        {/* Card 1 */}
-                        <div className="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                            <div className="card h-100 border-0 shadow-sm rounded-4 text-center p-4 hover-scale transition bg-white">
-                                <div className="card-body d-flex flex-column align-items-center">
-                                    <img src="https://images.unsplash.com/photo-1615109398623-88346a601842?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Rahul Mehta" style={{ objectFit: 'cover' }} className="rounded-circle border border-3 border-primary shadow mb-4" width="100" height="100" />
-                                    <div className="text-warning mb-3 d-flex justify-content-center gap-1">
-                                        <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
-                                    </div>
-                                    <p className="fst-italic text-secondary mb-4 flex-grow-1">"StayEase made my Goa vacation completely hassle-free. The booking process was smooth and the hotel was exactly as shown."</p>
-                                    <h5 className="fw-bold text-dark mb-0">Rahul Mehta</h5>
-                                    <small className="text-muted">Mumbai</small>
-                                </div>
-                            </div>
-                        </div>
+                        {testimonials.map((testimonial, index) => (
+                            <div key={index} className="col-12 col-md-6 col-lg-4 mx-auto" data-aos="fade-up" data-aos-delay={(index + 1) * 100}>
+                                <div className="testimonial-card card h-100 border-0 shadow-sm rounded-4 text-center p-4 hover-scale transition bg-white align-items-center">
+                                    <img src={testimonial.image} alt={testimonial.name} style={{ objectFit: 'cover' }} className="rounded-circle border border-3 border-primary shadow mb-4" width="100" height="100" />
+                                    <h4 className="fw-bold text-dark mb-0">{testimonial.name}</h4>
+                                    <p className="text-muted">{testimonial.location}</p>
 
-                        {/* Card 2 */}
-                        <div className="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                            <div className="card h-100 border-0 shadow-sm rounded-4 text-center p-4 hover-scale transition bg-white">
-                                <div className="card-body d-flex flex-column align-items-center">
-                                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Priya Sharma" style={{ objectFit: 'cover' }} className="rounded-circle border border-3 border-primary shadow mb-4" width="100" height="100" />
-                                    <div className="text-warning mb-3 d-flex justify-content-center gap-1">
-                                        <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
+                                    <div className="rating">
+                                        {[...Array(5)].map((_, i) => (
+                                            <span key={i}>
+                                                {i < testimonial.rating ? "⭐" : "☆"}
+                                            </span>
+                                        ))}
                                     </div>
-                                    <p className="fst-italic text-secondary mb-4 flex-grow-1">"I loved the premium experience. Secure payment and instant confirmation made everything so easy."</p>
-                                    <h5 className="fw-bold text-dark mb-0">Priya Sharma</h5>
-                                    <small className="text-muted">Delhi</small>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Card 3 */}
-                        <div className="col-12 col-md-6 col-lg-4 mx-auto" data-aos="fade-up" data-aos-delay="300">
-                            <div className="card h-100 border-0 shadow-sm rounded-4 text-center p-4 hover-scale transition bg-white">
-                                <div className="card-body d-flex flex-column align-items-center">
-                                    <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Arjun Patel" style={{ objectFit: 'cover' }} className="rounded-circle border border-3 border-primary shadow mb-4" width="100" height="100" />
-                                    <div className="text-warning mb-3 d-flex justify-content-center gap-1">
-                                        <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
-                                    </div>
-                                    <p className="fst-italic text-secondary mb-4 flex-grow-1">"Best price guarantee and excellent support team. Highly recommended!"</p>
-                                    <h5 className="fw-bold text-dark mb-0">Arjun Patel</h5>
-                                    <small className="text-muted">Ahmedabad</small>
+                                    <p className="fst-italic text-secondary mb-4 flex-grow-1">{testimonial.review}</p>
                                 </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>

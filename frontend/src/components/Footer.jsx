@@ -46,11 +46,12 @@ const Footer = () => {
                     {/* Contact Info & Socials */}
                     <div className="col-12 col-md-3">
                         <h5 className="text-white mb-3 fw-bold">Contact Us</h5>
-                        <ul className="list-unstyled text-secondary mb-3">
-                            <li className="mb-1"><i className="bi bi-geo-alt me-2"></i> Taj Palace Road, Mumbai, India</li>
-                            <li className="mb-1"><i className="bi bi-telephone me-2"></i> +91 98765 43210</li>
-                            <li className="mb-1"><i className="bi bi-envelope me-2"></i> support@stayease.in</li>
-                        </ul>
+                        <p className="text-secondary mb-3">
+                          StayEase Hotel <br />
+                          SG Highway, Ahmedabad <br />
+                          Gujarat, India – 380015 <br />
+                          Phone: +91 9876543210
+                        </p>
                         <div className="d-flex gap-3">
                             <a href="#" className="btn btn-outline-secondary rounded-circle p-2 d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
                                 <FaFacebookF />

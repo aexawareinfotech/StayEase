@@ -1,10 +1,48 @@
 const adminService = require('../services/adminService');
 const ErrorResponse = require('../utils/errorResponse');
 
+const Booking = require('../models/Booking');
+
 exports.getDashboardStats = async (req, res, next) => {
     try {
-        const stats = await adminService.getDashboardStats();
-        res.status(200).json({ success: true, data: stats });
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const checkIns = await Booking.countDocuments({
+            checkIn: { $gte: today },
+            status: "confirmed"
+        });
+
+        const checkOuts = await Booking.countDocuments({
+            checkOut: { $gte: today },
+            status: "confirmed"
+        });
+
+        const Room = require('../models/Room');
+        const totalRooms = await Room.countDocuments();
+
+        const bookedRooms = await Booking.countDocuments({
+            status: { $in: ["confirmed", "checked-in"] }
+        });
+
+        const occupancyRate =
+            totalRooms === 0
+                ? 0
+                : ((bookedRooms / totalRooms) * 100).toFixed(2);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                checkIns,
+                checkOuts,
+                occupancyRate,
+                // Fallbacks so the rest of the existing dashboard cards don't break
+                activeBookings: bookedRooms,
+                availableRooms: totalRooms - bookedRooms,
+                weeklyRevenue: 0,
+                monthlyRevenue: 0
+            }
+        });
     } catch (error) {
         next(error);
     }
@@ -73,5 +111,59 @@ exports.markNotificationRead = async (req, res, next) => {
         res.status(200).json({ success: true, data: notification });
     } catch (error) {
         next(error);
+    }
+};
+const Room = require('../models/Room');
+
+exports.createRoom = async (req, res, next) => {
+    try {
+
+        const room = await Room.create(req.body);
+
+        res.status(201).json({
+            success: true,
+            data: room
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+exports.updateRoom = async (req, res) => {
+    const room = await Room.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    );
+
+    res.json({
+        success: true,
+        data: room
+    });
+};
+
+exports.deleteRoom = async (req, res) => {
+    try {
+
+        const room = await Room.findByIdAndDelete(req.params.id);
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Room deleted successfully"
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Delete failed"
+        });
     }
 };

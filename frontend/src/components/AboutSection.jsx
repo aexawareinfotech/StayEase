@@ -20,6 +20,12 @@ function AboutSection() {
               Experience world-class comfort and premium services
               designed for unforgettable stays.
             </p>
+            <p className="text-muted mt-3">
+              StayEase Hotel <br />
+              SG Highway, Ahmedabad <br />
+              Gujarat, India – 380015 <br />
+              Phone: +91 9876543210
+            </p>
             <button className="btn btn-warning mt-3">
               Read More
             </button>

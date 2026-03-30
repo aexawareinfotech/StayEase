@@ -60,24 +60,67 @@ const AdminRooms = () => {
         e.preventDefault();
         try {
             if (editMode) {
-                await adminService.updateRoom(formData._id, formData);
+                console.log("Saving room changes...");
+                console.log("Room ID:", formData._id);
+                console.log("Form Data:", formData);
+
+                const response = await fetch(
+                    `http://localhost:5000/api/v1/admin/rooms/${formData._id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        },
+                        body: JSON.stringify(formData)
+                    }
+                );
+
+                const data = await response.json();
+
+                console.log("Server response:", data);
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Failed to process request");
+                }
+
+                alert("Room updated successfully");
             } else {
                 await adminService.createRoom(formData);
             }
             fetchRooms();
             closeModal();
         } catch (error) {
-            alert(error.response?.data?.error || 'Failed to process request');
+            console.error("Update error:", error);
+            alert(error.message || 'Failed to process request');
         }
     };
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to disable this room? It will be marked as Maintenance.')) {
             try {
-                await adminService.deleteRoom(id); // Backend marks it 'maintenance' soft delete
-                fetchRooms();
+                const response = await fetch(
+                    `http://localhost:5000/api/v1/admin/rooms/${id}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message);
+                }
+
+                alert("Room deleted successfully");
+                window.location.reload();
+
             } catch (error) {
-                alert('Failed to delete room');
+                console.error(error);
+                alert("Failed to delete room");
             }
         }
     };

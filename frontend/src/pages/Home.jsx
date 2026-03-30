@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BookingContext } from '../context/BookingContext';
 import CountUp from 'react-countup';
 import { FaBed, FaHeadset, FaShieldAlt, FaUndo, FaCheckCircle, FaStar } from 'react-icons/fa';
+import api from '../services/api';
 
 const testimonials = [
     {
@@ -35,6 +36,40 @@ const Home = () => {
     const [checkin, setCheckin] = useState('');
     const [checkout, setCheckout] = useState('');
     const [guests, setGuests] = useState('1');
+
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        subject: "",
+        message: ""
+    });
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            await api.post("/contact", formData);
+
+            alert("Message sent successfully!");
+
+            setFormData({
+                name: "",
+                email: "",
+                subject: "",
+                message: ""
+            });
+
+        } catch (error) {
+            alert("Error sending message");
+        }
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -287,17 +322,77 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* CALL TO ACTION SECTION */}
-            <section id="contact" className="py-5" style={{ background: 'linear-gradient(45deg, #2563eb, #3b82f6)' }}>
-                <div className="container py-md-5 text-center text-white" data-aos="fade-up">
-                    <h2 className="display-4 fw-bold mb-4">Ready to Experience Luxury?</h2>
-                    <p className="lead mb-5 opacity-75">Book your stay today to grab the best deals available worldwide.</p>
-                    <button
-                        onClick={() => navigate('/rooms')}
-                        className="btn btn-light btn-lg text-primary fw-bold px-5 py-3 rounded-pill shadow-lg pulse-animation"
-                    >
-                        Book Now
-                    </button>
+            {/* CONTACT SECTION */}
+            <section id="contact" className="contact-section">
+                <div className="container">
+                    <div className="contact-wrapper">
+
+                        {/* LEFT SIDE - IMAGE */}
+                        <div className="contact-left">
+                            <img
+                                src="https://images.unsplash.com/photo-1566073771259-6a8506099945"
+                                alt="hotel"
+                            />
+                            <div className="overlay">
+                                <h2>StayEase Hotel</h2>
+                                <p>Luxury & Comfort in Ahmedabad</p>
+                            </div>
+                        </div>
+
+                        {/* RIGHT SIDE - FORM */}
+                        <div className="contact-right">
+                            <h3>Contact Us</h3>
+
+                            <form onSubmit={handleSubmit} className="contact-form">
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Your Name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                />
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Your Email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+
+                                <input
+                                    type="text"
+                                    name="subject"
+                                    placeholder="Subject"
+                                    value={formData.subject}
+                                    onChange={handleChange}
+                                    required
+                                />
+
+                                <textarea
+                                    name="message"
+                                    placeholder="Your Message"
+                                    rows="4"
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    required
+                                />
+
+                                <button type="submit">Send Message</button>
+                            </form>
+
+                            {/* ADDRESS */}
+                            <div className="contact-info">
+                                <p>📍 SG Highway, Ahmedabad, Gujarat</p>
+                                <p>📞 +91 9876543210</p>
+                                <p>✉ support@stayease.com</p>
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
             </section>
         </div>

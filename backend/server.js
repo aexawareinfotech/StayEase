@@ -11,6 +11,7 @@ const rooms = require('./routes/roomRoutes');
 const bookings = require('./routes/bookingRoutes');
 const admin = require('./routes/adminRoutes');
 const emails = require('./routes/emailRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/v1/rooms', rooms);
 app.use('/api/v1/bookings', bookings);
 app.use('/api/v1/admin', admin);
 app.use('/api/v1/emails', emails);
+app.use('/api/v1/contact', contactRoutes);
 
 app.get("/", (req, res) => {
     res.send("StayEase API Running....");

@@ -99,8 +99,12 @@ const AdminLayout = () => {
                                     className={({ isActive }) => `nav-link text-white rounded-3 px-3 py-3 d-flex align-items-center gap-3 transition hover-bg-secondary fw-semibold ${isActive ? 'bg-primary shadow-sm' : ''}`}
                                     style={{ textDecoration: 'none' }}
                                 >
-                                    <span className={({ isActive }) => `${isActive ? 'text-white' : 'text-secondary'}`}>{item.icon}</span>
-                                    {item.name}
+                                    {({ isActive }) => (
+                                        <>
+                                            <span className={isActive ? 'text-white' : 'text-secondary'}>{item.icon}</span>
+                                            {item.name}
+                                        </>
+                                    )}
                                 </NavLink>
                             </li>
                         ))}

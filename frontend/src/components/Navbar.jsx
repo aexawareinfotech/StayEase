@@ -52,7 +52,7 @@ const Navbar = () => {
                 <li><Link to="/rooms">Rooms</Link></li>
               </ul>
             </div>
-            <a href="/#contact" className="text-gray-700 hover:text-blue-600 font-medium transition duration-150 text-decoration-none">Contact</a>
+            <a href="#contact" className="text-gray-700 hover:text-blue-600 font-medium transition duration-150 text-decoration-none">Contact</a>
             {user ? (
               <>
                 <Link to="/my-bookings" className="text-gray-700 hover:text-blue-600 font-medium transition duration-150 text-decoration-none">My Bookings</Link>
@@ -87,7 +87,7 @@ const Navbar = () => {
               <Link to="/rooms" className="block py-1 text-gray-600 font-medium hover:text-blue-600 text-decoration-none" onClick={toggleMenu}>Rooms</Link>
             </div>
           </div>
-          <a href="/#contact" className="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50 rounded-md text-decoration-none" onClick={toggleMenu}>Contact</a>
+          <a href="#contact" className="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50 rounded-md text-decoration-none" onClick={toggleMenu}>Contact</a>
           {user ? (
             <>
               <Link to="/my-bookings" className="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50 rounded-md" onClick={toggleMenu}>My Bookings</Link>

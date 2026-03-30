@@ -63,14 +63,14 @@ const AdminDashboard = () => {
             {/* Dashboard Stats */}
             <div className="row g-4 mb-5">
                 {[
-                    { title: "Today's Check-ins", value: stats.todaysCheckIns, icon: "text-primary bg-primary bg-opacity-10", size: "col-md-3" },
-                    { title: "Today's Check-outs", value: stats.todaysCheckOuts, icon: "text-danger bg-danger bg-opacity-10", size: "col-md-3" },
-                    { title: "Active Bookings", value: stats.activeBookings, icon: "text-success bg-success bg-opacity-10", size: "col-md-3" },
-                    { title: "Occupancy Rate", value: stats.occupancyRate, icon: "text-warning bg-warning bg-opacity-10", size: "col-md-3" },
+                    { title: "Today's Check-ins", value: stats.checkIns, icon: "text-primary bg-primary bg-opacity-10", size: "col-md-3" },
+                    { title: "Today's Check-outs", value: stats.checkOuts, icon: "text-danger bg-danger bg-opacity-10", size: "col-md-3" },
+                    { title: "Active Bookings", value: stats.activeBookings || 0, icon: "text-success bg-success bg-opacity-10", size: "col-md-3" },
+                    { title: "Occupancy Rate", value: `${stats.occupancyRate}%`, icon: "text-warning bg-warning bg-opacity-10", size: "col-md-3" },
 
-                    { title: "Available Rooms", value: stats.availableRooms, icon: "text-info bg-info bg-opacity-10", size: "col-md-4" },
-                    { title: "Weekly Revenue", value: `₹ ${stats.weeklyRevenue.toLocaleString("en-IN")}`, icon: "text-secondary bg-secondary bg-opacity-10", size: "col-md-4" },
-                    { title: "Monthly Revenue", value: `₹ ${stats.monthlyRevenue.toLocaleString("en-IN")}`, icon: "text-dark bg-dark bg-opacity-10", size: "col-md-4" }
+                    { title: "Available Rooms", value: stats.availableRooms || 0, icon: "text-info bg-info bg-opacity-10", size: "col-md-4" },
+                    { title: "Weekly Revenue", value: `₹ ${(stats.weeklyRevenue || 0).toLocaleString("en-IN")}`, icon: "text-secondary bg-secondary bg-opacity-10", size: "col-md-4" },
+                    { title: "Monthly Revenue", value: `₹ ${(stats.monthlyRevenue || 0).toLocaleString("en-IN")}`, icon: "text-dark bg-dark bg-opacity-10", size: "col-md-4" }
                 ].map((stat, i) => (
                     <div className={stat.size} key={i}>
                         <div className="card border-0 shadow-sm rounded-4 h-100 hover-scale transition">

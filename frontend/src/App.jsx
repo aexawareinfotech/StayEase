@@ -21,6 +21,7 @@ import EmailHistory from './pages/EmailHistory';
 import AdminLogin from './pages/AdminLogin';
 import AdminLayout from './components/AdminLayout'; import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
+import Contact from './pages/Contact';
 
 function App() {
   useEffect(() => {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/rooms" element={<Rooms />} />
             <Route path="/rooms/:id" element={<RoomDetails />} />
 

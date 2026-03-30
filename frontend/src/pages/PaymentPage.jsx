@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { bookingService } from '../services/api';
 import { BookingContext } from '../context/BookingContext';
 import { FaMobileAlt, FaBuilding, FaCreditCard, FaRegCreditCard } from 'react-icons/fa';
+import { QRCodeSVG as QRCode } from "qrcode.react";
 
 const cardRegex = /^[0-9]{16}$/;
 const cvvRegex = /^[0-9]{3}$/;
@@ -112,6 +113,8 @@ const PaymentPage = () => {
             }
         }, 2000);
     };
+
+    const upiLink = `upi://pay?pa=stayease@upi&pn=StayEaseHotel&am=${totalPrice}&cu=INR&tn=RoomBookingPayment`;
 
     return (
         <div className="bg-light min-vh-100 py-5 font-sans" style={{ background: 'linear-gradient(135deg, #f6f8fd 0%, #f1f5f9 100%)' }}>
@@ -278,13 +281,17 @@ const PaymentPage = () => {
                                                 {isUpiValid && (
                                                     <div className="border border-success rounded-4 p-4 mt-3 bg-success bg-opacity-10 shadow-sm fade-in d-inline-block">
                                                         <h6 className="fw-bold text-success mb-3">Scan QR to Pay</h6>
-                                                        <img
-                                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiId)}`}
-                                                            alt="UPI QR Code"
-                                                            className="img-fluid rounded shadow-sm bg-white p-2 mb-3 mx-auto"
-                                                            width="150" height="150"
-                                                        />
-                                                        <div className="fw-bold text-dark font-monospace mb-2">{upiId}</div>
+                                                        <div className="bg-white p-2 rounded shadow-sm d-inline-block mb-3 mx-auto">
+                                                            <QRCode
+                                                                value={upiLink}
+                                                                size={220}
+                                                                level="H"
+                                                            />
+                                                        </div>
+                                                        <div className="fw-bold text-dark font-monospace mb-3">{upiId}</div>
+                                                        <a href={upiLink} className="btn btn-success d-block mb-3 fw-bold rounded-pill">
+                                                            Pay via UPI App
+                                                        </a>
                                                         <div className="badge bg-danger p-2 fs-6">
                                                             Time remaining: {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
                                                         </div>

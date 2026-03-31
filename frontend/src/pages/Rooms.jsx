@@ -74,6 +74,13 @@ const Rooms = () => {
                                     {[1, 2, 3, 4, 5, 6].map(num => <option key={num} value={num}>{num}</option>)}
                                 </select>
                             </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Price Range</label>
+                                <div className="flex gap-2">
+                                    <input type="number" name="minPrice" placeholder="Min ₹" value={searchParams.minPrice || ''} onChange={handleFilterChange} className="w-1/2 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" min="0" />
+                                    <input type="number" name="maxPrice" placeholder="Max ₹" value={searchParams.maxPrice || ''} onChange={handleFilterChange} className="w-1/2 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" min="0" />
+                                </div>
+                            </div>
                             <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150">
                                 Apply Filters
                             </button>

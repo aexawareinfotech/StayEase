@@ -4,6 +4,8 @@ const {
     getDashboardStats,
     getAllRoomsAdmin,
     getAllBookings,
+    getAllUsers,
+    getLogs,
     updateBookingStatus,
     getOccupancyReport,
     getRevenueReport,
@@ -29,6 +31,8 @@ router.post('/rooms', createRoom);
 
 router.get('/bookings', getAllBookings);
 router.put('/bookings/:id/status', updateBookingStatus);
+router.get('/users', getAllUsers);
+router.get('/logs', getLogs);
 
 router.get('/reports/occupancy', getOccupancyReport);
 router.get('/reports/revenue', getRevenueReport);

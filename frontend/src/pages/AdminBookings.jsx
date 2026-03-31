@@ -8,14 +8,19 @@ const AdminBookings = () => {
     const [filterStatus, setFilterStatus] = useState('all');
 
     useEffect(() => {
-        fetchBookings();
-    }, []);
+        const timeoutId = setTimeout(() => fetchBookings(), 300);
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm, filterStatus]);
 
     const fetchBookings = async () => {
         try {
-            const res = await adminService.getAllBookings();
+            const params = {};
+            if (searchTerm) params.search = searchTerm;
+            if (filterStatus !== 'all') params.status = filterStatus;
+            
+            const res = await adminService.getAllBookings(params);
             if (res.data.success) {
-                setBookings(res.data.data.reverse());
+                setBookings(res.data.data);
             }
         } catch (error) {
             console.error('Error fetching bookings', error);
@@ -40,15 +45,7 @@ const AdminBookings = () => {
         }
     }
 
-    const filteredBookings = bookings.filter(booking => {
-        const matchSearch =
-            booking._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (booking.transactionId && booking.transactionId.toLowerCase().includes(searchTerm.toLowerCase()));
-
-        const matchStatus = filterStatus === 'all' || booking.status === filterStatus;
-        return matchSearch && matchStatus;
-    });
+    const filteredBookings = bookings;
 
     if (loading) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-primary"></div></div>;
 

@@ -21,8 +21,6 @@ router.post('/login', [
 
 router.post('/logout', protect, logout);
 
-router.post('/reset-password', [
-    body('email', 'Please include a valid email').isEmail()
-], resetPassword); // Simulated
+router.put('/reset-password', resetPassword);
 
 module.exports = router;

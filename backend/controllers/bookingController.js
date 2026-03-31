@@ -53,8 +53,31 @@ exports.getMyBookings = async (req, res, next) => {
 
 exports.cancelBooking = async (req, res, next) => {
     try {
-        const booking = await bookingService.cancelBooking(req.params.id, req.user._id);
-        res.status(200).json({ success: true, data: booking });
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) return res.status(404).json({ message: "Not found" });
+
+        const calculateRefund = (b) => {
+            const now = new Date();
+            const checkIn = new Date(b.checkIn);
+            const diffHours = (checkIn - now) / (1000 * 60 * 60);
+
+            if (diffHours > 24) return b.totalPrice;
+            return b.totalPrice * 0.5;
+        };
+
+        const refund = calculateRefund(booking);
+        booking.refundAmount = refund;
+        booking.status = "cancelled";
+        await booking.save();
+
+        const Log = require('../models/Log');
+        await Log.create({
+            action: "Booking Cancelled",
+            user: booking.user || req.user._id
+        });
+
+        res.json({ message: "Booking cancelled", booking });
     } catch (error) {
         next(error);
     }

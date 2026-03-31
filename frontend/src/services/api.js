@@ -23,11 +23,11 @@ apis.interceptors.request.use(
 export const authService = {
     login: (credentials) => apis.post('/auth/login', credentials),
     register: (userData) => apis.post('/auth/register', userData),
-    forgotPassword: (email) => apis.post('/auth/reset-password', { email }),
+    resetPassword: (email, newPassword) => apis.put('/auth/reset-password', { email, newPassword }),
 };
 
 export const roomService = {
-    getAllRooms: () => apis.get('/rooms'),
+    getAllRooms: (params) => apis.get('/rooms', { params }),
     searchRooms: (params) => apis.get('/rooms/search', { params }),
     getRoomDetails: (id) => apis.get(`/rooms/${id}`),
 };
@@ -41,7 +41,7 @@ export const bookingService = {
 
 export const adminService = {
     getDashboardStats: () => apis.get('/admin/dashboard'),
-    getAllBookings: () => apis.get('/admin/bookings'),
+    getAllBookings: (params) => apis.get('/admin/bookings', { params }),
     updateBookingStatus: (id, status) => apis.put(`/admin/bookings/${id}/status`, { status }),
     getAllRooms: () => apis.get('/admin/rooms'),
     createRoom: (data) => apis.post('/admin/rooms', data),
@@ -52,6 +52,8 @@ export const adminService = {
     getReports: (params) => apis.get('/admin/reports', { params }),
     getNotifications: () => apis.get('/admin/notifications'),
     markNotificationRead: (id) => apis.put(`/admin/notifications/${id}/read`),
+    getAllUsers: () => apis.get('/admin/users'),
+    getLogs: () => apis.get('/admin/logs'),
 };
 
 export const emailService = {

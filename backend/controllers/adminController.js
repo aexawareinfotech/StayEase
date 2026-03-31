@@ -59,8 +59,42 @@ exports.getAllRoomsAdmin = async (req, res, next) => {
 
 exports.getAllBookings = async (req, res, next) => {
     try {
-        const bookings = await adminService.getAllBookings(req.query);
+        const { status, search } = req.query;
+        let filter = {};
+        if (status) filter.status = status;
+
+        let bookings = await Booking.find(filter).populate('user').populate('room').sort({ createdAt: -1 });
+
+        if (search) {
+            const s = search.toLowerCase();
+            bookings = bookings.filter(b => 
+                (b.user && b.user.name && b.user.name.toLowerCase().includes(s)) ||
+                (b.bookingId && b.bookingId.toLowerCase().includes(s)) ||
+                (b._id.toString().includes(s))
+            );
+        }
+
         res.status(200).json({ success: true, count: bookings.length, data: bookings });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getAllUsers = async (req, res, next) => {
+    try {
+        const User = require('../models/User');
+        const users = await User.find();
+        res.json({ success: true, count: users.length, data: users });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getLogs = async (req, res, next) => {
+    try {
+        const Log = require('../models/Log');
+        const logs = await Log.find().sort({ date: -1 });
+        res.json({ success: true, count: logs.length, data: logs });
     } catch (error) {
         next(error);
     }

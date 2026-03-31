@@ -7,6 +7,8 @@ import AdminRooms from '../pages/AdminRooms';
 import AdminBookings from '../pages/AdminBookings';
 import AdminReports from '../pages/AdminReports';
 import PaymentHistory from '../pages/PaymentHistory';
+import AdminUsers from '../pages/AdminUsers';
+import AdminLogs from '../pages/AdminLogs';
 import ErrorBoundary from './ErrorBoundary';
 import {
     FaTachometerAlt, FaBed, FaBookOpen, FaChartBar,
@@ -26,7 +28,9 @@ const AdminLayout = () => {
         { path: '/admin/rooms', icon: <FaBed />, name: 'Rooms Management' },
         { path: '/admin/bookings', icon: <FaBookOpen />, name: 'Bookings' },
         { path: '/admin/reports', icon: <FaChartBar />, name: 'Reports' },
-        { path: '/admin/payment-history', icon: <FaWallet />, name: 'Payment History' }
+        { path: '/admin/payment-history', icon: <FaWallet />, name: 'Payment History' },
+        { path: '/admin/users', icon: <FaCircle />, name: 'User Management' },
+        { path: '/admin/logs', icon: <FaCircle />, name: 'System Logs' }
     ];
 
     useEffect(() => {
@@ -199,6 +203,8 @@ const AdminLayout = () => {
                         <Route path="bookings" element={<AdminBookings />} />
                         <Route path="reports" element={<AdminReports />} />
                         <Route path="payment-history" element={<ErrorBoundary><PaymentHistory /></ErrorBoundary>} />
+                        <Route path="users" element={<AdminUsers />} />
+                        <Route path="logs" element={<AdminLogs />} />
                     </Routes>
                 </main>
             </div>

@@ -4,6 +4,7 @@ import { authService } from '../services/api';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -14,9 +15,10 @@ const ForgotPassword = () => {
         setMessage('');
         setLoading(true);
         try {
-            const res = await authService.forgotPassword(email);
-            if (res.data.success) {
-                setMessage(res.data.message);
+            const res = await authService.resetPassword(email, newPassword);
+            if (res.data) {
+                setMessage(res.data.message || "Password updated successfully");
+                alert("Password updated!");
             }
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to send reset link');
@@ -51,6 +53,17 @@ const ForgotPassword = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
+                        <div className="pt-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                            <input
+                                type="password"
+                                required
+                                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-150"
+                                placeholder="Enter new password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <div>
@@ -59,7 +72,7 @@ const ForgotPassword = () => {
                             disabled={loading}
                             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md transition duration-150 disabled:bg-blue-300"
                         >
-                            {loading ? 'Sending...' : 'Send Reset Link'}
+                            {loading ? 'Updating...' : 'Update Password'}
                         </button>
                     </div>
                 </form>

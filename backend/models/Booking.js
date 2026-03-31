@@ -7,6 +7,7 @@ const bookingSchema = new mongoose.Schema({
     checkOut: { type: Date, required: true },
     guests: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
+    refundAmount: { type: Number, default: 0 },
     status: { type: String, enum: ['confirmed', 'cancelled', 'checked-in', 'checked-out'], default: 'confirmed' },
     bookingId: { type: String, unique: true },
     paymentStatus: {

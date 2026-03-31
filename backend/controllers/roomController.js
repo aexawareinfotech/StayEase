@@ -3,8 +3,19 @@ const ErrorResponse = require('../utils/errorResponse');
 
 exports.getRooms = async (req, res, next) => {
     try {
-        req.query.status = 'available';
-        const rooms = await roomService.getRooms(req.query);
+        const { minPrice, maxPrice } = req.query;
+        let filter = { status: 'available' };
+
+        if (minPrice && maxPrice) {
+            filter.pricePerNight = {
+                $gte: Number(minPrice),
+                $lte: Number(maxPrice),
+            };
+        }
+
+        const Room = require('../models/Room');
+        const rooms = await Room.find(filter);
+        // Matching format of original response
         res.status(200).json({ success: true, count: rooms.length, data: rooms });
     } catch (error) {
         next(error);

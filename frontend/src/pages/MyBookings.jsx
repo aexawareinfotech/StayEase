@@ -29,12 +29,12 @@ const MyBookings = () => {
         if (!window.confirm("Are you sure you want to cancel this booking?")) return;
         try {
             const res = await bookingService.cancelBooking(id);
-            if (res.data.success) {
-                alert("Booking cancelled successfully.");
+            if (res.data) {
+                alert(`Booking Cancelled\nRefund Amount: ₹${res.data.booking?.refundAmount || 0}`);
                 fetchBookings(); // Refresh list
             }
         } catch (err) {
-            alert(err.response?.data?.error || "Failed to cancel booking");
+            alert(err.response?.data?.message || "Failed to cancel booking");
         }
     };
 
@@ -108,6 +108,11 @@ const MyBookings = () => {
                                     </div>
 
                                     <div className="mt-6 flex justify-end">
+                                        {b.status === 'cancelled' && b.refundAmount !== undefined && (
+                                            <div className="bg-red-50 text-red-700 py-2.5 px-6 rounded-xl border border-red-200 shadow-sm font-bold">
+                                                Refunded: ₹ {b.refundAmount.toLocaleString("en-IN")}
+                                            </div>
+                                        )}
                                         {b.status === 'confirmed' && (
                                             <button
                                                 onClick={() => handleCancel(b._id)}

@@ -36,15 +36,24 @@ exports.logout = (req, res, next) => {
 };
 
 exports.resetPassword = async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(new ErrorResponse(errors.array()[0].msg, 400));
-    }
-
     try {
-        const token = await authService.resetPasswordSimulated(req.body.email);
-        res.status(200).json({ success: true, message: 'Password reset link sent (simulated)', token });
-    } catch (error) {
-        next(error);
+        const { email, newPassword } = req.body;
+        if (!email || !newPassword) {
+            return res.status(400).json({ message: "All fields required" });
+        }
+
+        const User = require('../models/User');
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.password = newPassword; 
+        await user.save();
+
+        res.json({ message: "Password updated successfully" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };

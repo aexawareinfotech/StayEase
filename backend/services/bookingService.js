@@ -20,6 +20,10 @@ exports.createBooking = async (data) => {
         throw new ErrorResponse(`Room capacity is ${roomDetails.capacity}, cannot accommodate ${guests} guests`, 400);
     }
 
+    console.log("CheckIn:", checkIn);
+    console.log("CheckOut:", checkOut);
+    console.log("Room:", room);
+
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
 
@@ -27,17 +31,18 @@ exports.createBooking = async (data) => {
         throw new ErrorResponse('Check-out date must be after check-in date', 400);
     }
 
-    // Double availability check
-    const conflictingBookings = await Booking.find({
-        room,
-        status: { $in: ['confirmed', 'checked-in'] },
-        $or: [
-            { checkIn: { $lt: checkOutDate }, checkOut: { $gt: checkInDate } }
-        ]
+    // Double availability check (Overlap check)
+    const existingBooking = await Booking.findOne({
+        room: room,
+        status: { $in: ["confirmed", "checked-in"] },
+        checkIn: { $lt: new Date(checkOut) },
+        checkOut: { $gt: new Date(checkIn) }
     });
 
-    if (conflictingBookings.length > 0) {
-        throw new ErrorResponse('Room is already booked for these dates', 400);
+    console.log("Existing booking:", existingBooking);
+
+    if (existingBooking) {
+        throw new ErrorResponse('Room already booked for selected dates', 400);
     }
 
     // Calculate total price
@@ -45,13 +50,17 @@ exports.createBooking = async (data) => {
     const days = Math.round(Math.abs((checkOutDate - checkInDate) / oneDay));
     const totalPrice = days * roomDetails.price;
 
+    const bookingId = "BK" + Date.now();
+
     const booking = await Booking.create({
         user,
         room,
         checkIn: checkInDate,
         checkOut: checkOutDate,
         guests,
-        totalPrice
+        totalPrice,
+        status: "confirmed",
+        bookingId: bookingId
     });
 
     await Notification.create({

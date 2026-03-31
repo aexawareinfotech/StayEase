@@ -27,8 +27,8 @@ const Booking = () => {
         try {
             const data = {
                 room: room._id,
-                checkIn,
-                checkOut,
+                checkIn: new Date(checkIn).toISOString(),
+                checkOut: new Date(checkOut).toISOString(),
                 guests,
                 // Total price gets finalized on backend, we just send basic requirements 
             };
@@ -36,8 +36,13 @@ const Booking = () => {
             if (res.data.success) {
                 navigate(`/payment/${res.data.data._id}`, { state: { totalPrice } });
             }
-        } catch (err) {
-            setError(err.response?.data?.error || 'Failed to confirm booking. Room might be unavailable.');
+        } catch (error) {
+            const errorMsg = error.response?.data?.error || error.response?.data?.message || "";
+            if (errorMsg.toLowerCase().includes("duplicate") || errorMsg.toLowerCase().includes("booked")) {
+                setError("Room already booked for selected dates");
+            } else {
+                setError("Booking failed. Try again.");
+            }
         } finally {
             setLoading(false);
         }

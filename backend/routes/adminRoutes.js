@@ -9,7 +9,8 @@ const {
     getRevenueReport,
     getNotifications,
     markNotificationRead,
-    createRoom
+    createRoom,
+    getReports
 } = require('../controllers/adminController');
 
 const { protect, authorize } = require('../middlewares/auth');
@@ -31,6 +32,7 @@ router.put('/bookings/:id/status', updateBookingStatus);
 
 router.get('/reports/occupancy', getOccupancyReport);
 router.get('/reports/revenue', getRevenueReport);
+router.get('/reports', getReports);
 
 router.get('/notifications', getNotifications);
 router.put('/notifications/:id/read', markNotificationRead);

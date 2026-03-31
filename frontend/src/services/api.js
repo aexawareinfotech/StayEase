@@ -9,7 +9,7 @@ const apis = axios.create({
 // Request interceptor to attach JWT token
 apis.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -49,6 +49,7 @@ export const adminService = {
     deleteRoom: (id) => apis.delete(`/admin/rooms/${id}`),
     getOccupancyReport: (params) => apis.get('/admin/reports/occupancy', { params }),
     getRevenueReport: (params) => apis.get('/admin/reports/revenue', { params }),
+    getReports: (params) => apis.get('/admin/reports', { params }),
     getNotifications: () => apis.get('/admin/notifications'),
     markNotificationRead: (id) => apis.put(`/admin/notifications/${id}/read`),
 };

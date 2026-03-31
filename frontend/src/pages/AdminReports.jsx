@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../services/api';
-import { ResponsiveContainer, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const AdminReports = () => {
     const [dateRange, setDateRange] = useState({
         startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
         endDate: new Date().toISOString().split('T')[0]
     });
-    const [revenueReport, setRevenueReport] = useState(null);
-    const [occupancyReport, setOccupancyReport] = useState(null);
+    const [report, setReport] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -18,12 +17,13 @@ const AdminReports = () => {
     const fetchReports = async () => {
         setLoading(true);
         try {
-            const [revRes, occRes] = await Promise.all([
-                adminService.getRevenueReport({ startDate: dateRange.startDate, endDate: dateRange.endDate }),
-                adminService.getOccupancyReport({ startDate: dateRange.startDate, endDate: dateRange.endDate })
-            ]);
-            if (revRes.data.success) setRevenueReport(revRes.data.data);
-            if (occRes.data.success) setOccupancyReport(occRes.data.data);
+            const startDate = new Date(dateRange.startDate).toISOString();
+            const endDate = new Date(dateRange.endDate).toISOString();
+            
+            const res = await adminService.getReports({ startDate, endDate });
+            if (res.data.success) {
+                setReport(res.data.data);
+            }
         } catch (error) {
             console.error('Failed to fetch reports', error);
         } finally {
@@ -41,14 +41,14 @@ const AdminReports = () => {
     };
 
     const exportToCSV = () => {
-        if (!revenueReport || !revenueReport.dailyBreakdown) return;
+        if (!report || !report.bookings) return;
 
-        const headers = ['Date', 'Daily Revenue (INR)', 'Bookings Count'];
+        const headers = ['Booking ID', 'Status', 'Total Price (INR)', 'Check-in', 'Check-out'];
         const csvRows = [];
         csvRows.push(headers.join(','));
 
-        revenueReport.dailyBreakdown.forEach(row => {
-            csvRows.push(`${row._id},${row.dailyRevenue},${row.bookingsCount}`);
+        report.bookings.forEach(b => {
+            csvRows.push(`${b.bookingId || b._id},${b.status},${b.totalPrice || b.totalAmount},${b.checkIn.split('T')[0]},${b.checkOut.split('T')[0]}`);
         });
 
         const csvString = csvRows.join('\n');
@@ -56,14 +56,19 @@ const AdminReports = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `stayease-revenue-${dateRange.startDate}-to-${dateRange.endDate}.csv`;
+        a.download = `stayease-report-${dateRange.startDate}-to-${dateRange.endDate}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     };
 
-    if (loading && !revenueReport) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-primary"></div></div>;
+    if (loading && !report) return <div className="vh-100 d-flex justify-content-center align-items-center"><div className="spinner-border text-primary"></div></div>;
+
+    const chartData = report?.bookings?.map((b) => ({
+        date: new Date(b.createdAt).toLocaleDateString(),
+        revenue: b.totalPrice || b.totalAmount || 0
+    })) || [];
 
     return (
         <div className="container-fluid py-4 fade-in">
@@ -98,7 +103,7 @@ const AdminReports = () => {
                     <div className="card shadow-sm border-0 rounded-4 h-100 bg-primary bg-opacity-10 text-primary hover-scale transition">
                         <div className="card-body p-4 d-flex flex-column align-items-start justify-content-center">
                             <h6 className="fw-bold tracking-wider text-uppercase small mb-2 opacity-75">Generated Revenue</h6>
-                            <h2 className="fw-bolder mb-0">₹ {revenueReport?.totalRevenue.toLocaleString("en-IN") || 0}</h2>
+                            <h2 className="fw-bolder mb-0">₹ {report?.totalRevenue?.toLocaleString("en-IN") || 0}</h2>
                         </div>
                     </div>
                 </div>
@@ -106,7 +111,7 @@ const AdminReports = () => {
                     <div className="card shadow-sm border-0 rounded-4 h-100 bg-success bg-opacity-10 text-success hover-scale transition">
                         <div className="card-body p-4 d-flex flex-column align-items-start justify-content-center">
                             <h6 className="fw-bold tracking-wider text-uppercase small mb-2 opacity-75">Occupancy Rate</h6>
-                            <h2 className="fw-bolder mb-0">{occupancyReport?.occupancyRate || '0%'}</h2>
+                            <h2 className="fw-bolder mb-0">{report?.occupancyRate || '0.00'}%</h2>
                         </div>
                     </div>
                 </div>
@@ -114,7 +119,7 @@ const AdminReports = () => {
                     <div className="card shadow-sm border-0 rounded-4 h-100 bg-info bg-opacity-10 text-info hover-scale transition">
                         <div className="card-body p-4 d-flex flex-column align-items-start justify-content-center">
                             <h6 className="fw-bold tracking-wider text-uppercase small mb-2 opacity-75">Total Bookings Executed</h6>
-                            <h2 className="fw-bolder mb-0">{revenueReport?.totalBookings || 0}</h2>
+                            <h2 className="fw-bolder mb-0">{report?.totalBookings || 0}</h2>
                         </div>
                     </div>
                 </div>
@@ -122,50 +127,26 @@ const AdminReports = () => {
 
             {/* Charts Row */}
             <div className="row g-4 mb-5">
-                <div className="col-lg-8">
+                <div className="col-lg-12">
                     <div className="card border-0 shadow-sm rounded-4 h-100 p-4">
-                        <h4 className="fw-bold text-dark border-bottom pb-3 mb-4">Financial Growth Map</h4>
-                        <div style={{ width: '100%', height: 350 }}>
-                            {revenueReport?.dailyBreakdown && revenueReport.dailyBreakdown.length > 0 ? (
+                        <h4 className="fw-bold text-dark border-bottom pb-3 mb-4">Earnings Chart</h4>
+                        {chartData.length > 0 ? (
+                            <div style={{ width: '100%', height: '300px' }}>
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={revenueReport.dailyBreakdown}>
-                                        <defs>
-                                            <linearGradient id="colorEarnings" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#1d4ed8" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="#1d4ed8" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <XAxis dataKey="_id" stroke="#6c757d" fontSize={12} tickMargin={10} />
-                                        <YAxis stroke="#6c757d" fontSize={12} tickFormatter={v => `₹${v.toLocaleString("en-IN")}`} />
+                                    <LineChart data={chartData}>
+                                        <XAxis dataKey="date" stroke="#6c757d" fontSize={12} tickMargin={10} />
+                                        <YAxis stroke="#6c757d" fontSize={12} tickFormatter={v => `₹${Number(v).toLocaleString("en-IN")}`} />
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#dee2e6" />
                                         <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 .5rem 1rem rgba(0,0,0,.15)' }} />
-                                        <Area type="monotone" dataKey="dailyRevenue" stroke="#1d4ed8" fillOpacity={1} fill="url(#colorEarnings)" strokeWidth={3} />
-                                    </AreaChart>
+                                        <Line type="monotone" dataKey="revenue" name="Revenue" stroke="#007bff" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                                    </LineChart>
                                 </ResponsiveContainer>
-                            ) : (
-                                <div className="h-100 d-flex align-items-center justify-content-center text-muted fw-bold">Insufficient Data</div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                <div className="col-lg-4">
-                    <div className="card border-0 shadow-sm rounded-4 h-100 p-4">
-                        <h4 className="fw-bold text-dark border-bottom pb-3 mb-4">Booking Activity</h4>
-                        <div style={{ width: '100%', height: 350 }}>
-                            {revenueReport?.dailyBreakdown && revenueReport.dailyBreakdown.length > 0 ? (
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={revenueReport.dailyBreakdown}>
-                                        <XAxis dataKey="_id" stroke="#6c757d" fontSize={12} tickMargin={10} hide />
-                                        <YAxis stroke="#6c757d" fontSize={12} />
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#dee2e6" />
-                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 .5rem 1rem rgba(0,0,0,.15)' }} cursor={{ fill: 'rgba(0,0,0,0.05)' }} />
-                                        <Bar dataKey="bookingsCount" name="Total Check-ins" fill="#0ea5e9" radius={[4, 4, 0, 0]} barSize={40} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            ) : (
-                                <div className="h-100 d-flex align-items-center justify-content-center text-muted fw-bold">Insufficient Data</div>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="h-100 p-5 d-flex align-items-center justify-content-center text-muted fw-bold">
+                                <p>No data available</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

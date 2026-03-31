@@ -167,3 +167,51 @@ exports.deleteRoom = async (req, res) => {
         });
     }
 };
+
+exports.getReports = async (req, res, next) => {
+    try {
+        const start = new Date(req.query.startDate);
+        const end = new Date(req.query.endDate);
+        
+        // include full end day
+        end.setHours(23, 59, 59, 999);
+
+        const bookings = await Booking.find({
+            createdAt: {
+                $gte: start,
+                $lte: end
+            },
+            status: { $in: ["confirmed", "checked-in"] }
+        });
+
+        // total bookings
+        const totalBookings = bookings.length;
+
+        // total revenue (Supporting totalPrice from the model)
+        const totalRevenue = bookings.reduce(
+            (sum, b) => sum + (b.totalPrice || b.totalAmount || 0),
+            0
+        );
+
+        // occupancy
+        const totalRooms = await Room.countDocuments();
+
+        const occupancyRate =
+            totalRooms === 0
+                ? 0
+                : ((totalBookings / totalRooms) * 100).toFixed(2);
+
+        res.json({
+            success: true,
+            data: {
+                totalBookings,
+                totalRevenue,
+                occupancyRate,
+                bookings
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Report generation failed" });
+    }
+};

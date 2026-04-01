@@ -26,15 +26,30 @@ export const authService = {
     resetPassword: (email, newPassword) => apis.put('/auth/reset-password', { email, newPassword }),
 };
 
+export const userService = {
+    getProfile: () => apis.get('/user/profile'),
+    updateProfile: (payload) => {
+        if (payload instanceof FormData) {
+            return apis.put('/user/update', payload, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+        }
+        return apis.put('/user/update', payload);
+    },
+    uploadProfileImage: (formData) => apis.post('/user/upload-image', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+};
+
 export const roomService = {
     getAllRooms: (params) => apis.get('/rooms', { params }),
     searchRooms: (params) => apis.get('/rooms/search', { params }),
+    getAvailableRooms: (params) => apis.get('/rooms/available', { params }),
     getRoomDetails: (id) => apis.get(`/rooms/${id}`),
 };
 
 export const bookingService = {
     createBooking: (data) => apis.post('/bookings', data),
     getMyBookings: () => apis.get('/bookings/my'),
+    modifyBooking: (id, payload) => apis.put(`/bookings/${id}/modify`, payload),
     cancelBooking: (id) => apis.put(`/bookings/${id}/cancel`),
     payBooking: (id, paymentMethod, transactionId) => apis.put(`/bookings/${id}/pay`, { paymentMethod, transactionId }),
 };

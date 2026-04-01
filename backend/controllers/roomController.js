@@ -75,3 +75,12 @@ exports.searchRooms = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getAvailableRooms = async (req, res, next) => {
+    try {
+        const rooms = await roomService.getAvailableRooms(req.query);
+        res.status(200).json({ success: true, count: rooms.length, data: rooms });
+    } catch (error) {
+        next(error);
+    }
+};

@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const errorHandler = require('./middlewares/error');
@@ -12,6 +13,7 @@ const bookings = require('./routes/bookingRoutes');
 const admin = require('./routes/adminRoutes');
 const emails = require('./routes/emailRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -28,6 +30,10 @@ app.use('/api/v1/bookings', bookings);
 app.use('/api/v1/admin', admin);
 app.use('/api/v1/emails', emails);
 app.use('/api/v1/contact', contactRoutes);
+app.use('/api/v1/user', userRoutes);
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get("/", (req, res) => {
     res.send("StayEase API Running....");

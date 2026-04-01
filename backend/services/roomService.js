@@ -97,3 +97,8 @@ exports.searchRooms = async (query) => {
 
     return rooms;
 };
+
+exports.getAvailableRooms = async (query) => {
+    // Reuse the same logic as searchRooms for date and filter based availability
+    return await exports.searchRooms(query);
+};

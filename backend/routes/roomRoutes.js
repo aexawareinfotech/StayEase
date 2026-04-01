@@ -5,6 +5,7 @@ const { protect, authorize } = require('../middlewares/auth');
 const router = express.Router();
 
 router.get('/search', searchRooms);
+router.get('/available', getAvailableRooms);
 
 router.route('/')
     .get(getRooms)
